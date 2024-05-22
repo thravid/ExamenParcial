@@ -2,6 +2,8 @@ const express= require('express');
 const mongoose=require('mongoose');
 const authRutas=require('./rutas/auten');
 const Usuario=require('./models/usuario');
+const entrega=require('./models/entrega');
+
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const app=express();

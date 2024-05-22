@@ -26,10 +26,14 @@ rutas.post('/iniciarSecion',async(req, res)=>{
         const validarContrasenia= await usuario.compareContrasenia(contrasenia);
         if(!validarContrasenia)
             return res.status(404).json({error:'Error de contraseña'});
-        const token =jwt.sign({usuarioId:usuario._id},'clave_secreta',{expiresIn:'3h'});
+        const token =jwt.sign({usuarioId:usuario._id},'clave_secreta',{expiresIn:'10h'});
+      
         res.json({token});
     }catch(error){
         res.status(500).json({mensaje: error.message})
     }
+rutas.post('/cerrarSecion',async(req, res)=>{
+        console.log(token);
+    });
 });
 module.exports=rutas;

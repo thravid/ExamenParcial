@@ -7,8 +7,8 @@ const reciboSqma=new mongoose.Schema({
         Nombre:String,
         Detalle:String,
         FechaEntrega:String,
-        Precio:Number
-        
+        Precio:Number,
+        usuario:{type: mongoose.Schema.Types.ObjectId, ref: 'usuario'}
 });
 
 const reciboModel=mongoose.model('reciboRegistros',reciboSqma,'registroRecivo');
