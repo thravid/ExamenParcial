@@ -32,8 +32,17 @@ rutas.post('/iniciarSecion',async(req, res)=>{
     }catch(error){
         res.status(500).json({mensaje: error.message})
     }
-rutas.post('/cerrarSecion',async(req, res)=>{
-        console.log(token);
-    });
 });
+rutas.post('/expirarToken/:token',async(req, res)=>{
+
+           const token=req.params.token;
+    const decodificar=jwt.verify(token,'clave_secreta');
+    console.log(decodificar);
+    decodificar.exp='1000';
+    //const playl=JSON.parse(atob(decodificar[3]));
+    console.log(decodificar);
+    const nuevoToken = jwt.sign({decodificar}, 'clave_secreta', { expiresIn:'1s' });
+            res.json('modificado');
+});
+  
 module.exports=rutas;

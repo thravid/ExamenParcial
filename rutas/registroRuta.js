@@ -5,6 +5,7 @@ const usuarioModel=require('../models/usuario');
 const entregaModel=require('../models/entrega');
 const clienteModel=require('../models/cliente');
 
+// clientesss Crud
 rutas.post('/registrarCliente',async(req, res)=>{
 
     const nuevaCliente= new clienteModel({
@@ -24,6 +25,40 @@ rutas.post('/registrarCliente',async(req, res)=>{
             }
     
 });
+rutas.put('/editarCliente/:id',async(req, res)=>{
+    try{
+        const registroCliente= await clienteModel.findByIdAndUpdate(req.params.id, req.body, {new: true});
+
+        if(!registroCliente)
+            return res.status(404).json({mensaje: 'registro no encontrado '});
+        else
+            return res.json(registroCliente);
+    }catch(error){
+        res.status(401).json({mensaje: error.message});
+    }
+});
+rutas.get('/traerClientes',async(req, res)=>{
+    try{
+
+        const ClientesTrer= await clienteModel.find();
+        res.json(ClientesTrer);
+
+    }catch(error){
+
+        res.status(500).json({mensaje:error.message});
+    }
+});
+rutas.delete('/eliminarClientes/:id',async(req, res)=>{
+    try{
+        const registroEliminado=await clienteModel.findByIdAndDelete(req.params.id);
+        if(!registroEliminado)
+            return res.status(404).json({mensaje:'registro no encontrado'});
+        return res.json({mensaje:'registro eliminado'});
+    }catch(error){
+        res.status(500).json({mesaje: error.message});
+    }
+});
+/// recibos CRUD
 rutas.get('/traerRegistros',async(req, res)=>{
     try{
 
@@ -159,6 +194,9 @@ rutas.get('/Fechaingreso/:fecha', async(req, res)=>{
     }
    
 });
+
+
+
 // copn el nuevo modelo REGISTRAR
 
 rutas.post('/registrarEntrega',async(req, res)=>{
@@ -219,7 +257,7 @@ rutas.get('/traerEntregas',async(req, res)=>{
     }
 });
 
-// reportes  
+// reportes --------------------------------------------------------------- 
 rutas.get('/registrosPorcliente/:idcliente', async(req, res)=>{
 
     const {idcliente}=req.params;
