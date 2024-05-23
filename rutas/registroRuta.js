@@ -3,8 +3,27 @@ const rutas=express.Router();
 const reciboModel=require('../models/reciboRegistros');
 const usuarioModel=require('../models/usuario');
 const entregaModel=require('../models/entrega');
+const clienteModel=require('../models/cliente');
 
+rutas.post('/registrarCliente',async(req, res)=>{
 
+    const nuevaCliente= new clienteModel({
+       
+        Nombre:req.body.Nombre,
+        Telefono:req.body.Telefono,
+        contactoRespaldo:req.body.contactoRespaldo,
+        usuario:req.body.usuario
+    
+        })
+    
+            try{
+                await nuevaCliente.save();
+                res.status(200).json(nuevaCliente);
+            }catch(error){
+                res.json(error);
+            }
+    
+});
 rutas.get('/traerRegistros',async(req, res)=>{
     try{
 
@@ -21,10 +40,10 @@ rutas.post('/registrar',async(req, res)=>{
 
     const nuevoRegistro= new reciboModel({
         FechaIngreso:req.body.FechaIngreso,
-        Nombre:req.body.Nombre,
         Detalle:req.body.Detalle,
         FechaEntrega:req.body.FechaEntrega,
         Precio:req.body.Precio,
+        cliente:req.body.cliente,
         usuario:req.body.usuario
     })
     try{
@@ -201,16 +220,16 @@ rutas.get('/traerEntregas',async(req, res)=>{
 });
 
 // reportes  
-rutas.get('/registrosPorUsuarios/:idUsuario', async(req, res)=>{
+rutas.get('/registrosPorcliente/:idcliente', async(req, res)=>{
 
-    const {idUsuario}=req.params;
-    console.log(idUsuario);
+    const {idcliente}=req.params;
+    console.log(idcliente);
     try{
-        const usuario=await usuarioModel.findById(idUsuario);
-        console.log(usuario);
-        if(!usuario)
-            return res.status(404).json({mensaje:'usuario no encontrado'});
-        const registros = await reciboModel.find({usuario:idUsuario}).populate('usuario');
+        const cliente=await clienteModel.findById(idcliente);
+        console.log(idcliente);
+        if(!idcliente)
+            return res.status(404).json({mensaje:'Cliente no encontrado'});
+        const registros = await reciboModel.find({cliente:idcliente}).populate('cliente');
         console.log(registros);
         res.json(registros);
         
@@ -219,4 +238,33 @@ rutas.get('/registrosPorUsuarios/:idUsuario', async(req, res)=>{
     }
 
 })
+// REPORTE DEL MONTO TOTAL RECOLECTADO POR CLIENTE
+rutas.get('/MontoCliente', async (req, res) => {
+    try {   
+        const clientes = await clienteModel.find();
+        const reporte = await Promise.all(
+            clientes.map( async ( cliente1 ) => {
+                const recibo = await reciboModel.find({ cliente: cliente1._id});
+                const montototal = recibo.reduce((sum, recibos) => sum + recibos.Precio, 0);
+                return {
+                    cliente: {
+                        _id: cliente1._id,
+                        NombreCliente: cliente1.Nombre
+                    },
+                    montototal,
+                    recibo: recibo.map( r => ( {
+                        _id: r._id,
+                        DetalleRecibo: r.Detalle,
+                        FechaEntrega:r.FechaEntrega,
+                        Precio: r.Precio
+                    }))
+                }
+            } )
+        )
+        res.json(reporte);
+    } catch (error){
+        res.status(500).json({ mensaje :  error.message})
+    }
+})
+// 
 module.exports=rutas;

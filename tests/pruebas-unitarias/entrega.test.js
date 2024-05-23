@@ -13,7 +13,7 @@ describe('pruebas unitarias Entregas',()=>{
         await mongoose.connect('mongodb://127.0.0.1:27017/Tintoreria',{
           useNewUrlParser :true,
         });
-        await entregaModel.deleteMany({});
+        
    });
    //al finalizar las pruebas
    afterAll(()=>{
@@ -21,23 +21,16 @@ describe('pruebas unitarias Entregas',()=>{
 
 
    }); 
-   test('Deberia traera todos las Entregas : GET: /traerEntregas',async()=>{
-    await entregaModel.create({FechaEntrega:"22-05-2024",
-    Nombre:"Marisol Perez",
-    Detalle:"2 polleras",
-    Precio:45,
-    CodRecibo:"664d3974a8761a672da9e32c"});
-    await entregaModel.create({FechaEntrega:"22-05-2024",
-    Nombre:"Daniel Cervantes",
-    Detalle:"100 camisas",
-    Precio:100,
-    CodRecibo:"664d3974a8761a672da9e32c"});
+   test('Deberia mostrar el p`rimer reporte : GET: /registrosPorcliente/:idcliente',async()=>{
+    
+    
          //solicitud de request
- const res= await request(app).get('/registroClientes/traerEntregas');
+ const res= await request(app).get('/registroClientes/MontoCliente');
          //verificar la respuesta
          
          expect (res.statusCode).toEqual(200);
-         expect (res.body).toHaveLength(2);
+         expect (res.body).toHaveLength(5);
 
   },10000);
+  
 });
